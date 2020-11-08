@@ -8,6 +8,8 @@ from random import sample
 grid = [64*i for i in range(10)]
 puans = np.zeros((10,10),dtype=np.int)
 data = []
+sdata = []
+playerslastscore = [0,0]
 ### OBJELER
 oyuncu = Player(0,0,"red")
 oyuncu.makeDecision(100)
@@ -43,6 +45,10 @@ def isStucked(gamer):
 
 
 def selectPlayer(datas):
+    global playerslastscore
+    print("Puanlar",playerslastscore)
+    if playerslastscore[1] > playerslastscore[0]:
+        return sdata
     k = [i[1]/len(i[0]) for i in datas]
     o = 0
     for i in k:
@@ -53,7 +59,7 @@ def selectPlayer(datas):
         o+=1
 
 def loop():
-    global n,fils,maxhamle,resetsayisi,data
+    global n,fils,maxhamle,resetsayisi,data,playerslastscore
     n+=1
     print(maxhamle,n)
     if n >= maxhamle:
@@ -63,6 +69,7 @@ def loop():
             #resetsayisi-=1
         else:
             data.append([oyuncu.direction[0:maxhamle],oyuncu.puan])
+        playerslastscore =[oyuncu.puan,oyuncu2.puan]
         reset()
         #oyuncu.direction[:maxhamle] = selectPlayer(data)
         maxhamle+=5
@@ -82,7 +89,7 @@ def loop():
         n-=1
         maxhamle-=(not isStucked(oyuncu))
         [oyuncu.direction.append(sample([0,1,2,3],1)[0]) for i in range(10)]
-    root.after(50,loop)
+    root.after(100,loop)
 
 def draw():
     canv.delete("all")
@@ -130,12 +137,16 @@ def yon2(e):
     #print(e.keysym)
     if e.keysym=="Up":
         a = oyuncu2.move(0,fils)
+        sdata.append(1)
     if e.keysym=="Down":
         a = oyuncu2.move(1,fils)
+        sdata.append(0)
     if e.keysym=="Right":
         a = oyuncu2.move(2,fils)
+        sdata.append(3)
     if e.keysym=="Left":
         a = oyuncu2.move(3,fils)
+        sdata.append(2)
     if a != False:
         oyuncu2.puan += puans[oyuncu2.x // 64, oyuncu2.y // 64]
         fils.append(a)
